@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>水平翻转</title>
+    <title>垂直翻转</title>
     <style>
       canvas{
         background-color: #f1f1f1;
@@ -13,7 +13,7 @@
   </head>
 
   <body>
-    <input type="file" />&ensp;<button>水平翻转</button>
+    <input type="file" />&ensp;<button>垂直翻转</button>
     <br>
     <br>
     <canvas></canvas>
@@ -68,7 +68,7 @@
 
         // 水平翻转
         document.querySelector('button').addEventListener('click',function(){
-          filter.flipHorizontal(drawConfig.startX, drawConfig.startY, drawConfig.drawX, drawConfig.drawY);
+          filter.flipVertical(drawConfig.startX, drawConfig.startY, drawConfig.drawX, drawConfig.drawY);
         })
       }
     </script>

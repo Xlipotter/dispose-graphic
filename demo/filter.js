@@ -181,3 +181,39 @@ Filter.prototype.blackWhite = function(startX, startY, w, h) {
   this.context.clearRect(startX, startY, w, h);
   this.context.putImageData(imgdata, startX, startY);
 };
+
+/*
+ * 浮雕
+ */
+Filter.prototype.relief = function(startX, startY, w, h) {
+  // 1.获取图像信息
+  let imgdata = this.context.getImageData(startX, startY, w, h);
+  // 图像的总像素
+  let pixels = imgdata.data.length;
+
+  // 2.遍历每一个像素
+  for (var i = 0, j = 4; i < pixels; i += 4, j += 4) {
+    if (j > pixels) {
+      j = pixels - 4;
+    }
+    // 3.把相邻像素的同个通道进行差值运算,再加上中性灰的色值
+    let r = Math.abs(imgdata.data[i] - imgdata.data[j] + 128),
+      g = Math.abs(imgdata.data[i + 1] - imgdata.data[j + 1] + 128),
+      b = Math.abs(imgdata.data[i + 2] - imgdata.data[j + 2] + 128);
+
+    // 4.把结果通道的值进行求和并按权平均作为最终通道的值
+    let val = parseInt(r * 0.3 + g * 0.59 + b * 0.11);
+    imgdata.data[i] = val;
+    imgdata.data[i + 1] = val;
+    imgdata.data[i + 2] = val;
+  }
+
+  // 5.把处理后的像素信息放回画布
+  this.context.clearRect(startX, startY, w, h);
+  this.context.putImageData(imgdata, startX, startY);
+};
+
+/*
+ * 高斯模糊
+ */
+Filter.prototype.gaussianBlur = function(startX, startY, w, h, r) {};

@@ -216,4 +216,67 @@ Filter.prototype.relief = function(startX, startY, w, h) {
 /*
  * 高斯模糊
  */
-Filter.prototype.gaussianBlur = function(startX, startY, w, h, r) {};
+Filter.prototype.gaussianBlur = function(startX, startY, w, h, R = 1) {
+  // 1.获取图像信息
+  let imgdata = this.context.getImageData(startX, startY, w, h);
+  // 图像的通道集合
+  var pxInfo = imgdata.data;
+  // 处理后的图像信息
+  var newImgData = [];
+
+  // 2.根据模糊半径求得周边每个点的权重
+  var weightingfactor = weightingFactor(createMartixArray(R));
+
+  // 3.遍历每一行
+  for (let curRow = 0; curRow < h; curRow++) {
+    // 4.在当前行内遍历列的每个点
+    for (let curCol = 0; curCol < w; curCol++) {
+      // 5.在当前点遍历周边所有像素点,以通道作为新的集合
+      var calDataR = [], // 周围红通道的集合
+        calDataG = [], // 周围绿通道的集合
+        calDataB = [], // 周围蓝通道的集合
+        calDataA = []; // 周围Alpha通道的集合
+      // 获取周边像素信息的行
+      for (let i = -Math.abs(R); i <= Math.abs(R); i++) {
+        if (curRow + i < 0 || curRow + i >= h) {
+          // 若超出行边界，跳过
+          continue;
+        }
+        // 获取周边像素所有通道的集合
+        for (let j = -Math.abs(R); j <= Math.abs(R); j++) {
+          if (curCol + j < 0 || curCol + j >= w) {
+            // 若超出列边界，跳过
+            continue;
+          }
+          var index = ((curRow + i) * w + curCol + j) * 4;
+          calDataR.push(pxInfo[index]);
+          calDataG.push(pxInfo[index + 1]);
+          calDataB.push(pxInfo[index + 2]);
+          calDataA.push(pxInfo[index + 3]);
+        }
+      }
+
+      // 6.对每个通道进行权重值的计算
+      imgdata.data[(curRow * w + curCol) * 4] = weightingFactorValue(
+        weightingfactor,
+        calDataR
+      );
+      imgdata.data[(curRow * w + curCol) * 4 + 1] = weightingFactorValue(
+        weightingfactor,
+        calDataG
+      );
+      imgdata.data[(curRow * w + curCol) * 4 + 2] = weightingFactorValue(
+        weightingfactor,
+        calDataB
+      );
+      imgdata.data[(curRow * w + curCol) * 4 + 3] = weightingFactorValue(
+        weightingfactor,
+        calDataA
+      );
+    }
+  }
+
+  // 7.把处理后的像素信息放回画布
+  this.context.clearRect(startX, startY, w, h);
+  this.context.putImageData(imgdata, startX, startY);
+};

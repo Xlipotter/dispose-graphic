@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>高斯模糊</title>
+    <style>
+      canvas{
+        background-color: #f1f1f1;
+      }
+    </style>
+  </head>
+
+  <body>
+    <input type="file" />&ensp;<button>高斯模糊</button>
+    <br>
+    <br>
+    <canvas></canvas>
+    <script src="./maths.js"></script>
+    <script src="./filter.js"></script>
+    <script>
+
+      // 绘图配置
+      var drawConfig = {
+        startX: 0,
+        startY: 0,
+        drawX: 0,
+        drawY: 0
+      }
+
+      // 获取画布
+      var cvs = document.querySelector("canvas");
+      cvs.width = 550;
+      cvs.height = 550;
+
+      // 创建用于绘图的图像
+      const createImage = function(file) {
+        return new Promise(function(res, rej) {
+          url = window.URL.createObjectURL(file);
+          let img = new Image();
+          img.src = url;
+          img.onload = function() {
+            Object.assign(drawConfig,{
+              drawX: img.width,
+              drawY: img.height
+            })
+            res(img);
+          };
+        });
+      };
+
+      // 绘图
+      const draw = function(context, file) {
+        createImage(file).then(img => {
+          context.drawImage(img, drawConfig.startX, drawConfig.startY, drawConfig.drawX, drawConfig.drawY);
+        });
+      };
+
+      // 画布就绪
+      if (cvs.getContext && cvs.getContext("2d")) {
+        let ctx = cvs.getContext("2d");
+        const filter = new Filter(ctx); // 实例滤镜
+
+        // 打开图片
+        document.querySelector("input").addEventListener("change", function() {
+          draw(ctx,this.files[0]);
+        });
+
+        // 高斯模糊
+        document.querySelector('button').addEventListener('click',function(){
+          filter.gaussianBlur(drawConfig.startX, drawConfig.startY, drawConfig.drawX, drawConfig.drawY);
+        })
+      }
+    </script>
+  </body>
+</html>

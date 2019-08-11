@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>垂直翻转</title>
+    <title>灰度</title>
     <style>
       canvas{
         background-color: #f1f1f1;
@@ -13,7 +13,7 @@
   </head>
 
   <body>
-    <input type="file" />&ensp;<button>垂直翻转</button>
+    <input type="file" />&ensp;<button>灰度</button>
     <br>
     <br>
     <canvas></canvas>
@@ -66,9 +66,9 @@
           draw(ctx,this.files[0]);
         });
 
-        // 垂直翻转
+        // 反相
         document.querySelector('button').addEventListener('click',function(){
-          filter.flipVertical(drawConfig.startX, drawConfig.startY, drawConfig.drawX, drawConfig.drawY);
+          filter.grayScale(drawConfig.startX, drawConfig.startY, drawConfig.drawX, drawConfig.drawY);
         })
       }
     </script>

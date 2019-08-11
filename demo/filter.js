@@ -3,7 +3,9 @@ function Filter(context) {
 }
 Filter.prototype.constructor = Filter;
 
-// 水平翻转
+/*
+ * 水平翻转
+ */
 Filter.prototype.flipHorizontal = function(startX, startY, w, h) {
   // 1.获取图像信息
   let imgdata = this.context.getImageData(startX, startY, w, h);
@@ -44,7 +46,9 @@ Filter.prototype.flipHorizontal = function(startX, startY, w, h) {
   this.context.putImageData(imgdata, startX, startY);
 };
 
-// 垂直翻转
+/*
+ * 垂直翻转
+ */
 Filter.prototype.flipVertical = function Filter(context) {
   this.context = context;
 };
@@ -91,5 +95,89 @@ Filter.prototype.flipVertical = function(startX, startY, w, h) {
   this.context.putImageData(imgdata, startX, startY);
 };
 
-// 反相
-Filter.prototype.inversion = function()
+/*
+ * 反相
+ */
+Filter.prototype.inversion = function(startX, startY, w, h) {
+  // 1.获取图像信息
+  let imgdata = this.context.getImageData(startX, startY, w, h);
+  // 图像的总像素
+  let pixels = imgdata.data.length;
+
+  // 2.遍历每一个像素
+  for (let i = 0; i < pixels; i += 4) {
+    // 3.将每个像素的各个通道的数值变成它的补数
+    // 当前的r,g,b色值
+    let r = imgdata.data[i],
+      g = imgdata.data[i + 1],
+      b = imgdata.data[i + 2];
+    // 反相后的r,g,b色值
+    imgdata.data[i] = 255 - r;
+    imgdata.data[i + 1] = 255 - g;
+    imgdata.data[i + 2] = 255 - b;
+  }
+
+  // 4.把处理后的像素信息放回画布
+  this.context.clearRect(startX, startY, w, h);
+  this.context.putImageData(imgdata, startX, startY);
+};
+
+/*
+ * 灰度
+ */
+Filter.prototype.grayScale = function(startX, startY, w, h) {
+  // 1.获取图像信息
+  let imgdata = this.context.getImageData(startX, startY, w, h);
+  // 图像的总像素
+  let pixels = imgdata.data.length;
+
+  // 2.遍历每一个像素
+  for (let i = 0; i < pixels; i += 4) {
+    // 3.将每个像素的各个通道的数值变成按权的整数法所得的值
+    // 当前的r,g,b色值
+    let r = imgdata.data[i],
+      g = imgdata.data[i + 1],
+      b = imgdata.data[i + 2];
+
+    // 计算结果值
+    let val = parseInt(r * 0.3 + g * 0.59 + b * 0.11);
+    // 反相后的r,g,b色值
+    imgdata.data[i] = val;
+    imgdata.data[i + 1] = val;
+    imgdata.data[i + 2] = val;
+  }
+
+  // 4.把处理后的像素信息放回画布
+  this.context.clearRect(startX, startY, w, h);
+  this.context.putImageData(imgdata, startX, startY);
+};
+
+/*
+ * 黑白
+ */
+Filter.prototype.blackWhite = function(startX, startY, w, h) {
+  // 1.获取图像信息
+  let imgdata = this.context.getImageData(startX, startY, w, h);
+  // 图像的总像素
+  let pixels = imgdata.data.length;
+
+  // 2.遍历每一个像素
+  for (let i = 0; i < pixels; i += 4) {
+    // 3.将每个像素的所有通道的值按权平均,和中性灰的色值进行对比
+    // 当前的r,g,b色值
+    let r = imgdata.data[i],
+      g = imgdata.data[i + 1],
+      b = imgdata.data[i + 2];
+
+    // 计算结果值
+    let val = parseInt(r * 0.3 + g * 0.59 + b * 0.11) >= 128 ? 255 : 0;
+    // 黑白后的r,g,b色值
+    imgdata.data[i] = val;
+    imgdata.data[i + 1] = val;
+    imgdata.data[i + 2] = val;
+  }
+
+  // 4.把处理后的像素信息放回画布
+  this.context.clearRect(startX, startY, w, h);
+  this.context.putImageData(imgdata, startX, startY);
+};
